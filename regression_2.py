@@ -3,18 +3,18 @@ import numpy as np
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
 
-# データを読み込む
-data = np.loadtxt("simple.txt")
+# データ読み込み
+data = np.loadtxt("regression_2.txt")
 x = data.T[0]
 y = data.T[1]
 
 # サンプルの数
 nsample = x.size
 
-# おまじない (後で解説)
-X = np.column_stack((np.repeat(1, nsample), x))
+# 行列Xの作成
+X = np.column_stack((np.repeat(1, nsample), x, x**2))
 
-# 回帰実行
+# 回帰を実行
 model = sm.OLS(y, X)
 results = model.fit()
 
@@ -22,10 +22,11 @@ results = model.fit()
 #print results.summary()
 
 # パラメータの推定値を取得
-a, b = results.params
+a, b, c = results.params
 
-# プロットを表示
+# グラフで表示
 plt.plot(x, y, 'o')
-plt.plot(x, a+b*x)
-plt.text(0, 0, "a={:8.3f}, b={:8.3f}".format(a,b))
+plt.plot(x, a+b*x+c*x**2)
+plt.title("a={:.4f}, b={:.4f}, c={:.4f}".format(a,b,c))
 plt.show()
+

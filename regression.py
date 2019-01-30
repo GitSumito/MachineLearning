@@ -1,56 +1,31 @@
-# -*- coding: utf-8 -*-
-
+# coding: utf-8
 import numpy as np
-# ベクトルの定義
-# numpyでは([])で括る
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
 
-# 与えられたもの部屋の広さとか
-x = np.array([1,3,5,10,20])
-# その結果。値段など。
-y = np.array([2.5,6,11,21,38])
+# データを読み込む
+data = np.loadtxt("regression.txt")
+x = data.T[0]
+y = data.T[1]
 
+# サンプルの数
+nsample = x.size
 
-# 全ての配列を表示
-print ("全ての配列を表示")
-print (x)
-print (y)
+# おまじない (後で解説)
+X = np.column_stack((np.repeat(1, nsample), x))
 
-## データの中心化
-# 平均の算出
-print x.mean()
-print y.mean()
+# 回帰実行
+model = sm.OLS(y, X)
+results = model.fit()
 
-print ("中心化")
-# cはcenteringの略とする
-# pandsでも中心化する方法は存在する
-xc = x -x.mean()
-print (xc)
+# 結果の概要を表示
+#print results.summary()
 
-yc = y - y.mean()
-print(yc)
+# パラメータの推定値を取得
+a, b = results.params
 
-
-## パラメータaの計算
-print ("パラメータaの計算")
-# 要素ごとの掛け算（要素積）
-# 中心化したデータを掛け、それを合算させる。
-# centeringした値が必要になる
-#xx = xc * xc
-#print xx
-
-# 実際はサーキットラーンを使うともっと早い
-# 分母はxc * xcで、最後に足す
-xcxc = xc * xc
-print xcxc
-print ("分母:")
-print xcxc.sum()
-
-# 分子はx * yで最後に足す
-xcyc = xc * yc
-print ("分子:")
-print xcyc.sum()
-
-answer = xcyc.sum()/xcxc.sum()
-print ("傾き:")
-print (answer)
-
+# プロットを表示
+plt.plot(x, y, 'o')
+plt.plot(x, a+b*x)
+plt.text(0, 0, "a={:8.3f}, b={:8.3f}".format(a,b))
+plt.show()
